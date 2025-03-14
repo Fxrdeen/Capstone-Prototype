@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       });
 
       const result = await chatSession.sendMessage([
-        "Describe what you see in this image in detail",
+        "The image is a prescription for a medication. Describe what you see in the image in detail.",
         {
           inlineData: {
             mimeType: file.type,
