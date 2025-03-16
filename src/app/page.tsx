@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
-  const [result, setResult] = useState<string>('');
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,10 +21,10 @@ export default function Home() {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('image', image);
+      formData.append("image", image);
 
-      const response = await fetch('/api/vision', {
-        method: 'POST',
+      const response = await fetch("/api/vision", {
+        method: "POST",
         body: formData,
       });
 
@@ -32,11 +32,12 @@ export default function Home() {
       if (data.error) {
         throw new Error(data.error);
       }
-      
-      setResult(data.text);
+
+      setResult(data);
+      console.log(JSON.stringify(data, null, 2));
     } catch (error) {
-      console.error('Error:', error);
-      setResult('Failed to process image. Please try again.');
+      console.error("Error:", error);
+      setResult("Failed to process image. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -46,7 +47,7 @@ export default function Home() {
     <div className="min-h-screen p-8 bg-white dark:bg-black text-black dark:text-white">
       <main className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Image to Text Converter</h1>
-        
+
         <div className="space-y-4">
           <input
             type="file"
@@ -54,7 +55,7 @@ export default function Home() {
             onChange={handleImageUpload}
             className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
-          
+
           {image && (
             <div className="space-y-4">
               <img
@@ -67,7 +68,7 @@ export default function Home() {
                 disabled={loading}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Processing...' : 'Convert to Text'}
+                {loading ? "Processing..." : "Convert to Text"}
               </button>
             </div>
           )}
@@ -75,7 +76,11 @@ export default function Home() {
           {result && (
             <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <h2 className="text-xl font-semibold mb-2">Result:</h2>
-              <p className="whitespace-pre-wrap">{result}</p>
+              <pre className="whitespace-pre-wrap overflow-auto max-h-96 text-sm">
+                {typeof result === "string"
+                  ? result
+                  : JSON.stringify(result, null, 2)}
+              </pre>
             </div>
           )}
         </div>
